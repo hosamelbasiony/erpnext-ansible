@@ -1,0 +1,13 @@
+[master]
+65.109.173.32
+
+[nodes]
+65.109.173.32
+
+[master:vars]
+ansible_ssh_user=frappe
+ansible_ssh_pass=asd
+
+[nodes:vars]
+ansible_ssh_user=frappe
+ansible_ssh_pass=asd
