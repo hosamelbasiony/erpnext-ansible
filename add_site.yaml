@@ -1,17 +1,17 @@
 ---
-# ansible-playbook frappe.yaml -i inventory --extra-vars "ansible_sudo_pass=asd site=erp.tarqim.info"
+# ansible-playbook frappe.yaml -i inventory --extra-vars "ansible_sudo_pass=asd dbname=erp2 site=erp.tarqim.info"
 - hosts: nodes
   become: yes     
   tasks:
     - name: Create new site
       shell: |
         cd ./frappe-bench-demo
-        bench new-site demo2.tarqim.info --db-name demo2_erp --mariadb-root-username root --mariadb-root-password asd --admin-password asd --verbose --force
+        bench new-site "{{ site }}" --db-name "{{ dbname }}" --mariadb-root-username root --mariadb-root-password asd --admin-password asd --verbose --force
         touch ./sites/currentsite.txt
-        echo "demo2.tarqim.info" > ./sites/currentsite.txt        
-        bench --site demo2.tarqim.info install-app erpnext
-        bench --site demo2.tarqim.info install-app payments
-        bench --site demo2.tarqim.info install-app healthcare
-        bench --site demo2.tarqim.info install-app hrms
+        echo "{{ site }}" > ./sites/currentsite.txt        
+        bench --site "{{ site }}" install-app erpnext
+        bench --site "{{ site }}" install-app payments
+        bench --site "{{ site }}" install-app healthcare
+        bench --site "{{ site }}" install-app hrms
 
         
