@@ -1,5 +1,5 @@
 ---
-# ansible-playbook frappe.yaml -i inventory --extra-vars "ansible_sudo_pass=asd"
+# ansible-playbook frappe.yaml -i inventory --extra-vars "ansible_sudo_pass=asd" --extra-vars "site=erp.tarqim.info"
 - hosts: nodes
   become: yes     
   tasks:
