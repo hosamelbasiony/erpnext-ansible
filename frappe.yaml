@@ -1,6 +1,6 @@
 ---
 # ansible-playbook frappe.yaml -i inventory --extra-vars "ansible_sudo_pass=asd"
-- hosts: master
+- hosts: nodes
   become: yes
   vars:
      mysql_root_username: "root"
