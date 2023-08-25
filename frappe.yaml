@@ -1,5 +1,19 @@
 ---
 # ansible-playbook frappe.yaml -i inventory --extra-vars "ansible_sudo_pass=asd"
+# apt-get install openjdk-8-jdk-headless
+# wget https://d28dx6y1hfq314.cloudfront.net/144/18748/any/package_files/4308263.deb?t=1692929154_b914d536aefa76df9a3c900dc253330ec7c203ad
+# dpkg -i rundeck_4.15.0.20230725-1_all.deb
+# rundeckd [start|stop|restart|condrestart|status]
+# /etc/init.d/rundeckd start
+# http://192.168.1.9:4440/ => admin - admin
+# /etc/init.d/rundeckd stop
+
+# mkdir semaphore
+# cd semaphore
+# sudo wget https://github.com/ansible-semaphore/semaphore/releases/download/v2.8.75/semaphore_2.8.75_linux_amd64.deb
+# sudo dpkg -i semaphore_2.8.75_linux_amd64.deb
+# sudo semaphore setup
+# sudo semaphore service --config=./config.json
 - hosts: nodes
   become: yes
   vars:
@@ -9,7 +23,17 @@
      NODEJS_VERSION: "18"
      
   tasks:  
-    - name: Update repositories cache and install "foo" package
+  
+    - name: Remove file (sources.list)
+      file:
+        path: /etc/apt/sources.list
+        state: absent
+    
+    - name: Fix broken packages
+      command:
+        cmd: 'sudo dpkg --configure -a'
+        
+    - name: Update repositories cache
       apt:
         update_cache: yes
     
@@ -23,7 +47,7 @@
         - virtualenv 
         - python3.10-venv
         - software-properties-common
-        - mariadb-server #=10.6.12-MariaDB
+        - mariadb-server=1:10.6.12-0ubuntu0.22.04.1
         - libmysqlclient-dev
         - redis-server 
         - curl 
@@ -87,7 +111,11 @@
     - name: Install frappe-bench
       command:
         cmd: 'sudo -H pip3 install frappe-bench'
-        
+     
+    - name: Test for specific line in /etc/mysql/mariadb.conf.d/50-server.cnf
+      shell: grep -c "^pid-file = /run/mysqld/mysqld.pid" /etc/mysql/mariadb.conf.d/50-server.cnf || true
+      register: test_grep
+  
     - name: add lines
       lineinfile: 
         dest: /etc/mysql/mariadb.conf.d/50-server.cnf
@@ -113,6 +141,7 @@
       - 'collation-server = utf8mb4_unicode_ci' 
       - '[mysql]' 
       - 'default-character-set = utf8mb4' 
+      when: test_grep.stdout == "0"
       
     - name: Make sure mariadb running 
       service:
@@ -142,6 +171,7 @@
         bench --site demo.tarqim.info install-app erpnext
         bench --site demo.tarqim.info install-app payments
         bench --site demo.tarqim.info install-app healthcare
+        bench --site demo.tarqim.info install-app hrms
 
     
     

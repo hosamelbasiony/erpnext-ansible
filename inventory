@@ -1,8 +1,8 @@
 [master]
-65.109.173.32
+192.168.1.8
 
 [nodes]
-65.109.173.32
+192.168.1.8
 
 [master:vars]
 ansible_ssh_user=frappe
